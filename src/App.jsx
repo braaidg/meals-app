@@ -1,3 +1,5 @@
+import { useGlobalContext } from "./context";
+
 import './App.css'
 
 import Search from './components/Search'
@@ -6,13 +8,14 @@ import Favorites from './components/Favorites'
 import Modal from './components/Modal'
 
 function App() {
+  const {showModal} = useGlobalContext()
 
   return (
     <main>
       <Search/>
       {/* <Favorites/> */}
       <Meals/>
-      {/* <Modal/> */}
+      { showModal && <Modal/>}
     </main>
   )
 }
