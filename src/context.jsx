@@ -14,6 +14,7 @@ const AppProvider = ({ children }) => {
 
   const [showModal, setShowModal] = useState(false);
   const [selectedMeal, setSelectedMeal] = useState(null)
+  const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem('favorites')) || [])
 
   const fetchMeals = async (url) => {
     setLoading(true);
@@ -36,13 +37,30 @@ const AppProvider = ({ children }) => {
 
   const selectMeal = (idMeal, favoriteMeal) => {
     let meal;
-    meal = meals.find((meal) => meal.idMeal === idMeal )
+
+    favoriteMeal ? meal = favorites.find((meal) =>meal.idMeal === idMeal )
+    : meal = meals.find((meal) => meal.idMeal === idMeal )
     setSelectedMeal(meal)
     setShowModal(true);
   }
 
   const closeModal = () => {
     setShowModal(false)
+  }
+
+  const addToFavorites = (idMeal) => {
+    const alreadyFavorite = favorites.find((meal) => meal.idMeal === idMeal)
+    if (alreadyFavorite) return
+    const meal = meals.find((meal) => meal.idMeal === idMeal)
+    const updatedFavorites = [...favorites, meal];
+    setFavorites(updatedFavorites)
+    localStorage.setItem("favorites", JSON.stringify(updatedFavorites))
+  }
+
+  const removeFromFavorites = (idMeal) => {
+    const updatedFavorites = favorites.filter((meal) => meal.idMeal !== idMeal)
+    setFavorites(updatedFavorites)
+    localStorage.setItem("favorites", JSON.stringify(updatedFavorites))
   }
 
   useEffect(() => {
@@ -56,7 +74,7 @@ const AppProvider = ({ children }) => {
 
   return (
     <AppContext.Provider
-      value={{ meals, loading, setSearchTerm, fetchRandomMeal, showModal, selectMeal, selectedMeal, closeModal  }}
+      value={{ meals, loading, setSearchTerm, fetchRandomMeal, showModal, selectMeal, selectedMeal, closeModal, addToFavorites, removeFromFavorites, favorites  }}
     >
       {children}
     </AppContext.Provider>
